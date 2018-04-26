@@ -1,5 +1,7 @@
 # Overlord 0.0.1
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/7f620273459690867359/maintainability)](https://codeclimate.com/github/elliottshort/overlord/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/7f620273459690867359/test_coverage)](https://codeclimate.com/github/elliottshort/overlord/test_coverage)
+
 ## What is Overlord?
 A fully-featured Discord bot that's intended to automate spam detection, moderation functions, provide you with helpful features and make the job of managing your server suck less.
 
