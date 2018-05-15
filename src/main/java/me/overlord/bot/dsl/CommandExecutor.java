@@ -30,10 +30,10 @@ public class CommandExecutor {
         }
 
         String[] splitMessage = event.getMessage().getContentRaw().split("[\\s&&[^\\n]]++");
-        String commandString = App.properties.get("bot.commandPrefix", ";;") + splitMessage[0];
+        String commandString = splitMessage[0];
 
         for (Command command : commands) {
-            if (commandString.equalsIgnoreCase((command.getCommand()))) {
+            if (commandString.equalsIgnoreCase((App.properties.get("bot.commandPrefix", ";;") + command.getCommand()))) {
                 event.getChannel().sendMessage((String) command.getResponse()).queue();
             }
         }
