@@ -3,28 +3,23 @@ package me.overlord.bot;
 import javax.security.auth.login.LoginException;
 
 import com.ufoscout.properlty.Properlty;
-import me.overlord.bot.dsl.Command;
-import me.overlord.bot.dsl.CommandBuilder;
-import me.overlord.bot.dsl.CommandExecutor;
-import me.overlord.bot.dsl.annotation.CommandSet;
+import me.overlord.bot.commandframework.CommandExecutor;
+import me.overlord.bot.commandframework.annotation.Command;
+import me.overlord.bot.commandframework.annotation.CommandSet;
 import me.overlord.bot.listeners.MentionListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
-import org.reflections.scanners.ResourcesScanner;
+
 import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
+import org.reflections.scanners.TypeAnnotationsScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class App {
@@ -35,6 +30,8 @@ public class App {
             .add("classpath:config/bot.properties")
             .build();
 
+    public static Map<String, Method> commands = new HashMap<>();
+
     public static void main(String[] args) throws LoginException, InterruptedException {
         logger.info("=== Loading Overlord Bot ===");
 
@@ -44,10 +41,19 @@ public class App {
 
         jda.addEventListener(new MentionListener());
 
-        Reflections reflections = new Reflections("me.overlord.bot.commands");
-        Set<Class<?>> commandSets = reflections.getTypesAnnotatedWith(CommandSet.class);
+        Reflections reflections = new Reflections("me.overlord.bot",
+                new MethodAnnotationsScanner(),
+                new TypeAnnotationsScanner(),
+                new SubTypesScanner());
 
         CommandExecutor executor = new CommandExecutor(jda);
+        Set<Class<?>> commandSets = reflections.getTypesAnnotatedWith(CommandSet.class);
+        Set<Method> commandMethods = reflections.getMethodsAnnotatedWith(Command.class);
+
+        for (Method command : commandMethods)
+            commands.put(command.getAnnotation(Command.class).value(), command);
+
+        System.out.println("Command length is :: " + commands.size());
 
         for (Class<?> commandSet : commandSets) {
             try {
