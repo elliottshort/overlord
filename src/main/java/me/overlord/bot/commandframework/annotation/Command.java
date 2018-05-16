@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Command {
     String value();
-    Constants.UserType permission();
+    Constants.UserType permission() default Constants.UserType.Everyone;
 }

@@ -10,6 +10,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,16 +42,24 @@ public class CommandExecutor {
         for (String key : commands.keySet()) {
             if (commandString.equalsIgnoreCase((App.properties.get("bot.commandPrefix", ";;") + key))) {
                 if (canPerformAction(event, commands.get(key).getAnnotation(Command.class).permission().getRoleId())) {
-                    try {
-                        commands.get(key).invoke(commands.get(key).getDeclaringClass().getConstructor().newInstance(),
-                                event, splitMessage);
-                    } catch (Exception e) {
-                        logger.error("Error :: " + e.getLocalizedMessage());
-                    }
+                    Thread t = new Thread(() -> invokeMethod(key, splitMessage, event));
+                    t.setDaemon(true);
+                    t.start();
                 } else {
                     event.getChannel().sendMessage("Did you really think I'd let you do that? \uD83E\uDD14").queue();
                 }
             }
+        }
+    }
+
+    private void invokeMethod(String methodName, String[] arguments, MessageReceivedEvent event) {
+        Method method = commands.get(methodName);
+        try {
+            method.setAccessible(true);
+            method.invoke(method.getDeclaringClass().getConstructor().newInstance(), event, arguments);
+        } catch (Exception e) {
+            logger.error("Error occured while invoking :: " +
+                    methodName + "\n :: Message :: " + e.getLocalizedMessage());
         }
     }
 
