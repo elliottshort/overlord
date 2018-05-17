@@ -5,10 +5,11 @@ import me.overlord.bot.App;
 public class Constants {
 
   public enum ArgumentType {
-    Sentence {},
-    Number {},
-    Channel {},
-    User {}
+    Sentence,
+    Number,
+    String,
+    Channel,
+    User
   }
 
   public enum UserType {

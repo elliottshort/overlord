@@ -9,8 +9,8 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class ModerationCommands {
 
   @Command(value = "heyThere", permission = UserType.Administrator)
-  public void hey(MessageReceivedEvent event, String[] arguments) {
-    event.getChannel().sendMessage("Hello there " + arguments[1] + "!").queue();
+  public void hey(MessageReceivedEvent event, Object arguments) {
+    event.getChannel().sendMessage("Hello there " + arguments + "!").queue();
   }
 
   @Command(value = "everyone", permission = UserType.Everyone)

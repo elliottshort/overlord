@@ -1,0 +1,12 @@
+[
+  {
+    "command": "heyThere",
+    "description": "A command that says hey.",
+    "usage": "heyThere <name>"
+  },
+  {
+    "command": "everyone",
+    "description": "A command everyone can use!",
+    "usage": "everyone"
+  }
+]

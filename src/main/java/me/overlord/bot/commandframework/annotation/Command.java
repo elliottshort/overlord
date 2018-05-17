@@ -12,4 +12,6 @@ public @interface Command {
   String value();
 
   Constants.UserType permission() default Constants.UserType.Everyone;
+
+  Constants.ArgumentType expects() default Constants.ArgumentType.Sentence;
 }

@@ -1,15 +1,18 @@
 package me.overlord.bot;
 
 import com.ufoscout.properlty.Properlty;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.security.auth.login.LoginException;
+
 import me.overlord.bot.commandframework.CommandExecutor;
 import me.overlord.bot.commandframework.annotation.Command;
 import me.overlord.bot.commandframework.annotation.CommandSet;
 import me.overlord.bot.listeners.MentionListener;
+import me.overlord.bot.util.Common;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -62,5 +65,6 @@ public class App {
         logger.error(e.getLocalizedMessage());
       }
     }
+    Common.printCommandsWithoutHelp();
   }
 }
