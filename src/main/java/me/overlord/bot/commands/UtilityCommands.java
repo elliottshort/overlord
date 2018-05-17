@@ -16,10 +16,9 @@ public class UtilityCommands {
 
     EmbedBuilder statusEmbed =
         new EmbedBuilder()
-            .setDescription("Status")
             .setColor(new Color(0, 255, 255))
             .addField("Uptime", Common.botUptime(), true)
-            .addField("Ping", Long.toString(event.getJDA().getPing()) + "ms", true);
+            .addField("Latency", Long.toString(event.getJDA().getPing()) + "ms", true);
 
     event.getChannel().sendMessage(statusEmbed.build()).queue();
   }

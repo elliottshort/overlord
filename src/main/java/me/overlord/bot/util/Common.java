@@ -31,7 +31,6 @@ public class Common {
   private static Logger logger = LoggerFactory.getLogger(Common.class);
 
   public static void printCommandsWithoutHelp() {
-
     URL url = Resources.getResource("commandframework/help.json");
     StringBuilder sb = new StringBuilder();
     List<String> commandsWithoutHelp = new ArrayList<>(commands.keySet());
