@@ -40,7 +40,6 @@ public class CommandExecutor {
     String[] splitMessage = event.getMessage().getContentRaw().split("[\\s&&[^\\n]]++");
 
     if (splitMessage[0].startsWith(App.properties.get("bot.commandPrefix", ";;"))) {
-
       String commandString = sanitizeCommandString(splitMessage[0]);
       boolean validCommand = false;
 
@@ -60,28 +59,7 @@ public class CommandExecutor {
               .queue();
         }
       } else {
-
-        String commandMatchCandidate =
-            findClosestMatch(commands.keySet(), commandString).toString();
-
-        if (!commandMatchCandidate.isEmpty()) {
-          event
-              .getChannel()
-              .sendMessage(
-                  "I couldn't find the "
-                      + "command '"
-                      + commandString
-                      + "' did you mean '"
-                      + commandMatchCandidate
-                      + "' instead?")
-              .queue();
-        } else {
-          event
-              .getChannel()
-              .sendMessage(
-                  "I couldn't find the " + "command " + commandString + " please try again.")
-              .queue();
-        }
+        sendSuggestedCommand(commandString, event);
       }
     }
   }
@@ -101,6 +79,28 @@ public class CommandExecutor {
               + methodName
               + "\n :: Message :: "
               + e.getLocalizedMessage());
+    }
+  }
+
+  private void sendSuggestedCommand(String commandString, MessageReceivedEvent event) {
+    String commandMatchCandidate = findClosestMatch(commands.keySet(), commandString).toString();
+
+    if (!commandMatchCandidate.isEmpty()) {
+      event
+          .getChannel()
+          .sendMessage(
+              "I couldn't find the "
+                  + "command '"
+                  + commandString
+                  + "' did you mean '"
+                  + commandMatchCandidate
+                  + "' instead?")
+          .queue();
+    } else {
+      event
+          .getChannel()
+          .sendMessage("I couldn't find the " + "command " + commandString + " please try again.")
+          .queue();
     }
   }
 
