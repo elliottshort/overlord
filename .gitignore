@@ -30,6 +30,7 @@ Temporary Items
 
 # Compiled class file
 *.class
+bot.properties
 
 # Log file
 *.log
