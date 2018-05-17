@@ -41,5 +41,3 @@ The dashboard for Overlord is located
 [here](https://codeclimate.com/github/elliottshort/overlord).
 It does not currently give feedback on PRs, but it can be useful to know the kinds of issues it reports.
 
-## Finally
-
