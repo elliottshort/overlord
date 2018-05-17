@@ -1,27 +1,32 @@
 package me.overlord.bot.listeners;
 
+import java.util.HashMap;
+import java.util.Map;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
 public class MentionListener extends ListenerAdapter {
 
-    @Override
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+  @Override
+  public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 
-        if (event.getAuthor().isBot())
-            return;
+    if (event.getAuthor().isBot()) return;
 
-        if (event.getMessage().getContentRaw().toLowerCase().contains(event.getJDA().getSelfUser().getName().toLowerCase())
-                || event.getMessage().isMentioned(event.getJDA().getSelfUser())) {
-            event.getMessage().addReaction("\uD83D\uDC40").queue();
-            event.getChannel().sendMessage("I'm performing this action because " + event.getAuthor().getName() + " mentioned me.").queue();
-            Map<String, Integer> killsQty = new HashMap<String, Integer>();
-
-
-        }
+    if (event
+            .getMessage()
+            .getContentRaw()
+            .toLowerCase()
+            .contains(event.getJDA().getSelfUser().getName().toLowerCase())
+        || event.getMessage().isMentioned(event.getJDA().getSelfUser())) {
+      event.getMessage().addReaction("\uD83D\uDC40").queue();
+      event
+          .getChannel()
+          .sendMessage(
+              "I'm performing this action because "
+                  + event.getAuthor().getName()
+                  + " mentioned me.")
+          .queue();
+      Map<String, Integer> killsQty = new HashMap<String, Integer>();
     }
+  }
 }

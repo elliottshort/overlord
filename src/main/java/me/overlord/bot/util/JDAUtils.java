@@ -1,4 +1,3 @@
 package me.overlord.bot.util;
 
-public class JDAUtils {
-}
+public class JDAUtils {}
