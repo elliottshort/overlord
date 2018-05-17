@@ -11,8 +11,8 @@ public class ModerationCommands {
 
     @Command(value = "heyThere", permission = UserType.Administrator)
     public void hey(MessageReceivedEvent event, String[] arguments) {
-        System.out.println("Hello there!");
-        event.getChannel().sendMessage("Hello there! " + arguments[1]).queue();
+        event.getChannel().sendMessage("Hello there " + arguments[1] + "!")
+                .queue();
     }
 
     @Command(value = "everyone", permission = UserType.Everyone)

@@ -7,11 +7,13 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static me.overlord.bot.App.commands;
@@ -37,29 +39,49 @@ public class CommandExecutor {
             return;
 
         String[] splitMessage = event.getMessage().getContentRaw().split("[\\s&&[^\\n]]++");
-        String commandString = splitMessage[0];
 
-        for (String key : commands.keySet()) {
-            if (commandString.equalsIgnoreCase((App.properties.get("bot.commandPrefix", ";;") + key))) {
-                if (canPerformAction(event, commands.get(key).getAnnotation(Command.class).permission().getRoleId())) {
-                    Thread t = new Thread(() -> invokeMethod(key, splitMessage, event));
+        if (splitMessage[0].startsWith(App.
+                properties.get("bot.commandPrefix", ";;"))) {
+            
+            String commandString = sanitizeCommandString(splitMessage[0]);
+
+            boolean validCommand = false;
+
+            if (commands.keySet().contains(commandString)) validCommand = true;
+
+            if (validCommand) {
+                if (canPerformAction(event, commands.get(commandString).
+                        getAnnotation(Command.class).permission().getRoleId())) {
+                    Thread t = new Thread(() -> invokeMethod(commandString, splitMessage, event));
                     t.setDaemon(true);
                     t.start();
                 } else {
-                    event.getChannel().sendMessage("Did you really think I'd let you do that? \uD83E\uDD14").queue();
+                    event.getChannel().sendMessage("Did you really think I'd " +
+                            "let you do that? \uD83E\uDD14").queue();
+                }
+            } else {
+                String matchCandidate = findClosestMatch(commands.keySet(), commandString).toString();
+                if (!matchCandidate.isEmpty()) {
+                    event.getChannel().sendMessage("I couldn't find the " + "command '" +
+                            commandString + "' did you mean '" + matchCandidate + "' instead?").queue();
+                } else {
+                    event.getChannel().sendMessage("I couldn't find the " + "command "
+                            + commandString + " please try again.").queue();
                 }
             }
         }
     }
 
+    /*
+     * Utility methods
+     */
+
     private void invokeMethod(String methodName, String[] arguments, MessageReceivedEvent event) {
-        Method method = commands.get(methodName);
-        try {
+        Method method = commands.get(methodName); try {
             method.setAccessible(true);
             method.invoke(method.getDeclaringClass().getConstructor().newInstance(), event, arguments);
         } catch (Exception e) {
-            logger.error("Error occured while invoking :: " +
-                    methodName + "\n :: Message :: " + e.getLocalizedMessage());
+            logger.error("Error occured while invoking :: " + methodName + "\n :: Message :: " + e.getLocalizedMessage());
         }
     }
 
@@ -69,10 +91,8 @@ public class CommandExecutor {
             return true;
 
         for (Role r : getPermissionedRoles(event.getGuild().getRoles(), permissionedRoleId)) {
-            if (event.getMember().getRoles().contains(r))
-                return true;
-        }
-        return false;
+            if (event.getMember().getRoles().contains(r)) return true;
+        } return false;
     }
 
     private List<Role> getPermissionedRoles(List<Role> serverRoles, String permissionedRoleId) {
@@ -81,7 +101,22 @@ public class CommandExecutor {
             if (serverRoles.get(i).getId().equals(permissionedRoleId)) {
                 permissionedRoles = serverRoles.subList(0, i + 1);
             }
-        }
-        return permissionedRoles;
+        } return permissionedRoles;
+    }
+
+    private static Object findClosestMatch(Collection<?> collection, Object
+            target) {
+        int distance = Integer.MAX_VALUE; Object closest = null;
+        for (Object compareObject : collection) {
+            int currentDistance = StringUtils.getLevenshteinDistance(compareObject.toString(), target.toString());
+            if (currentDistance < distance) {
+                distance = currentDistance; closest = compareObject;
+            }
+        } return closest;
+    }
+
+    private String sanitizeCommandString(String commandString) {
+        return commandString.replaceAll(App.
+                properties.get("bot.commandPrefix", ";;"), "");
     }
 }
