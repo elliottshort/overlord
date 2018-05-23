@@ -40,6 +40,8 @@ public class GuildMemberHoldingQueue extends ListenerAdapter {
 
   @Override
   public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
+
+    System.out.println("Getting here!");
     if (event
         .getMessage()
         .getContentRaw()
@@ -50,7 +52,7 @@ public class GuildMemberHoldingQueue extends ListenerAdapter {
               .getJDA()
               .getGuildById(App.holdingQueueGuildCache.getIfPresent(event.getAuthor().getId()))
               .getController();
-
+      
     }
   }
 }
