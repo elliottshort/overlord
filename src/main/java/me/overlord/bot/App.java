@@ -1,16 +1,21 @@
 package me.overlord.bot;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.ufoscout.properlty.Properlty;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import javax.security.auth.login.LoginException;
 
 import me.overlord.bot.commandframework.CommandExecutor;
 import me.overlord.bot.commandframework.annotation.Command;
 import me.overlord.bot.commandframework.annotation.CommandSet;
+import me.overlord.bot.listeners.GuildMemberHoldingQueue;
 import me.overlord.bot.listeners.MentionListener;
 import me.overlord.bot.util.Common;
 import net.dv8tion.jda.core.AccountType;
@@ -31,6 +36,9 @@ public class App {
       Properlty.builder().add("classpath:config/bot.properties").build();
   public static Map<String, Method> commands = new HashMap<>();
 
+  public static Cache<String, String> holdingQueueGuildCache =
+          Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
+
   public static void main(String[] args) throws LoginException, InterruptedException {
     logger.info("=== Loading Overlord Bot ===");
 
@@ -40,6 +48,7 @@ public class App {
             .buildBlocking();
 
     jda.addEventListener(new MentionListener());
+    jda.addEventListener(new GuildMemberHoldingQueue());
 
     Reflections reflections =
         new Reflections(
