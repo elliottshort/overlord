@@ -33,12 +33,14 @@ public class App {
 
   public static final Properlty properties =
       Properlty.builder().add("classpath:config/bot.properties").build();
+
   public static Map<String, Method> commands = new HashMap<>();
 
   public static Cache<String, String> holdingQueueGuildCache =
       Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
 
   public static void main(String[] args) throws LoginException, InterruptedException {
+
     logger.info("=== Loading Overlord Bot ===");
 
     JDA jda =
@@ -46,8 +48,20 @@ public class App {
             .setToken(properties.get("discord.token", "error-retrieving-token"))
             .buildBlocking();
 
+    loadCommands(jda);
+
     jda.addEventListener(new MentionListener());
     jda.addEventListener(new NewGuildMemberHoldingQueue());
+
+    CommandExecutor executor = new CommandExecutor(jda);
+
+    for (Guild g : jda.getGuilds()) {
+      JDAUtils.repopulateHoldingQueue(g.getController());
+    }
+    Common.printCommandsWithoutHelp();
+  }
+
+  private static void loadCommands(JDA jda) {
 
     Reflections reflections =
         new Reflections(
@@ -56,19 +70,8 @@ public class App {
             new TypeAnnotationsScanner(),
             new SubTypesScanner());
 
-    CommandExecutor executor = new CommandExecutor(jda);
-
     Set<Class<?>> commandSets = reflections.getTypesAnnotatedWith(CommandSet.class);
     Set<Method> commandMethods = reflections.getMethodsAnnotatedWith(Command.class);
-
-    for (Guild g : jda.getGuilds()) {
-      JDAUtils.repopulateHoldingQueue(g.getController());
-    }
-
-    for (Method command : commandMethods)
-      commands.put(command.getAnnotation(Command.class).value(), command);
-
-    logger.info("==== Number of commands loaded :: " + commands.size() + " ====");
 
     for (Class<?> commandSet : commandSets) {
       try {
@@ -77,6 +80,10 @@ public class App {
         logger.error(e.getLocalizedMessage());
       }
     }
-    Common.printCommandsWithoutHelp();
+
+    for (Method command : commandMethods)
+      commands.put(command.getAnnotation(Command.class).value(), command);
+
+    logger.info("==== Number of commands loaded :: " + commands.size() + " ====");
   }
 }
