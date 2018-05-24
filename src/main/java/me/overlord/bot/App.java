@@ -12,12 +12,14 @@ import javax.security.auth.login.LoginException;
 import me.overlord.bot.commandframework.CommandExecutor;
 import me.overlord.bot.commandframework.annotation.Command;
 import me.overlord.bot.commandframework.annotation.CommandSet;
-import me.overlord.bot.listeners.GuildMemberHoldingQueue;
 import me.overlord.bot.listeners.MentionListener;
+import me.overlord.bot.listeners.NewGuildMemberHoldingQueue;
 import me.overlord.bot.util.Common;
+import me.overlord.bot.util.JDAUtils;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Guild;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
@@ -45,7 +47,7 @@ public class App {
             .buildBlocking();
 
     jda.addEventListener(new MentionListener());
-    jda.addEventListener(new GuildMemberHoldingQueue());
+    jda.addEventListener(new NewGuildMemberHoldingQueue());
 
     Reflections reflections =
         new Reflections(
@@ -58,6 +60,10 @@ public class App {
 
     Set<Class<?>> commandSets = reflections.getTypesAnnotatedWith(CommandSet.class);
     Set<Method> commandMethods = reflections.getMethodsAnnotatedWith(Command.class);
+
+    for (Guild g : jda.getGuilds()) {
+      JDAUtils.repopulateHoldingQueue(g.getController());
+    }
 
     for (Method command : commandMethods)
       commands.put(command.getAnnotation(Command.class).value(), command);

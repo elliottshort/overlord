@@ -1,10 +1,13 @@
 package me.overlord.bot.util;
 
 import java.awt.Color;
+import java.util.List;
 import me.overlord.bot.App;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.managers.GuildController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +30,7 @@ public class JDAUtils {
     }
   }
 
-  public static void handleRoleCreation(Guild guild, String roleName) {
+  private static void handleRoleCreation(Guild guild, String roleName) {
     guild.getController().createRole().setName(roleName).complete();
   }
 
@@ -45,6 +48,29 @@ public class JDAUtils {
         .filter(role -> role.getName().toLowerCase().equals(roleName.toLowerCase()))
         .findFirst()
         .orElse(null);
+  }
+
+  public static void repopulateHoldingQueue(GuildController guildController) {
+    App.holdingQueueGuildCache.invalidateAll();
+
+    List<Member> heldMembers =
+        guildController
+            .getGuild()
+            .getMembersWithRoles(
+                guildController
+                    .getGuild()
+                    .getRolesByName(App.properties.get("holding.roleName", "Holding"), true));
+
+    for (Member m : heldMembers) {
+      App.holdingQueueGuildCache.put(m.getUser().getId(), guildController.getGuild().getId());
+    }
+
+    logger.info(
+        "==== Guild :: "
+            + guildController.getGuild().getName()
+            + "'s Holding queue was re-populated with :: "
+            + App.holdingQueueGuildCache.estimatedSize()
+            + " users ====");
   }
 
   public static EmbedBuilder buildRulesEmbed(String guildName) {
