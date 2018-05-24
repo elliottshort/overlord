@@ -15,6 +15,7 @@ public class NewGuildMemberHoldingQueue extends ListenerAdapter {
 
   @Override
   public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+    if (event.getMember().getUser().isBot()) return;
 
     event
         .getGuild()
@@ -41,12 +42,12 @@ public class NewGuildMemberHoldingQueue extends ListenerAdapter {
 
   @Override
   public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
+    if (event.getAuthor().isBot()) return;
+
     if (event
         .getMessage()
         .getContentRaw()
         .contains(App.properties.get("bot.commandPrefix", ";;") + "accept")) {
-
-      // if (event.getAuthor().isBot()) return;
 
       if (App.holdingQueueGuildCache.getIfPresent(event.getAuthor().getId()) != null) {
 
