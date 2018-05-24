@@ -35,7 +35,7 @@ public class CommandExecutor {
 
     JDA jda = event.getJDA();
 
-    if (event.getAuthor() == jda.getSelfUser() || event.getAuthor().isBot()) return;
+    if (event.getAuthor() == jda.getSelfUser() || event.getAuthor().isBot() || !event.getChannelType().isGuild()) return;
 
     String[] splitMessage = event.getMessage().getContentRaw().split("[\\s&&[^\\n]]++");
 

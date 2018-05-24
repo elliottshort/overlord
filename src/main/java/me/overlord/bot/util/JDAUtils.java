@@ -1,5 +1,6 @@
 package me.overlord.bot.util;
 
+import java.awt.Color;
 import me.overlord.bot.App;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
@@ -7,18 +8,16 @@ import net.dv8tion.jda.core.entities.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
-
 public class JDAUtils {
 
   private static Logger logger = LoggerFactory.getLogger(JDAUtils.class);
 
-  public static void createHoldingRole(Guild guild, String holdingRoleName) {
-    if (!guildHasRole(guild, holdingRoleName)) {
+  public static void createMemberRole(Guild guild, String memberRoleName) {
+    if (!guildHasRole(guild, memberRoleName)) {
       logger.warn(
-          "** Guild Does NOT Have the Holding role setup, attempting to create.."
+          "** Guild Does NOT Have the Member role setup, attempting to create.."
               + "\n If I fail to create the role, please give me administrative priveleges and try again. ");
-      handleRoleCreation(guild, holdingRoleName);
+      handleRoleCreation(guild, memberRoleName);
 
       /*
        * TODO: Figure out a proper way to programatically set the role permissioning. Here Don't use the

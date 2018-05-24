@@ -8,9 +8,9 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 public class GuildJoinListener extends ListenerAdapter {
   @Override
   public void onGuildJoin(GuildJoinEvent event) {
-    String holdingRoleName = App.properties.get("holding.roleName", "Holding");
-    if (!JDAUtils.guildHasRole(event.getGuild(), holdingRoleName)) {
-      JDAUtils.createHoldingRole(event.getGuild(), holdingRoleName);
+    String memberRoleName = App.properties.get("member.roleName", "Member");
+    if (!JDAUtils.guildHasRole(event.getGuild(), memberRoleName)) {
+      JDAUtils.createMemberRole(event.getGuild(), memberRoleName);
     }
   }
 }

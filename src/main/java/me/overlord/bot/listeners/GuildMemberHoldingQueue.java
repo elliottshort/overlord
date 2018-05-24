@@ -15,15 +15,6 @@ public class GuildMemberHoldingQueue extends ListenerAdapter {
 
   @Override
   public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-    event
-        .getGuild()
-        .getController()
-        .addRolesToMember(
-            event.getMember(),
-            event
-                .getGuild()
-                .getRolesByName(App.properties.get("holding.roleName", "Holding"), true))
-        .queue();
 
     event
         .getUser()
@@ -40,8 +31,6 @@ public class GuildMemberHoldingQueue extends ListenerAdapter {
 
   @Override
   public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
-
-    System.out.println("Getting here!");
     if (event
         .getMessage()
         .getContentRaw()
@@ -52,7 +41,14 @@ public class GuildMemberHoldingQueue extends ListenerAdapter {
               .getJDA()
               .getGuildById(App.holdingQueueGuildCache.getIfPresent(event.getAuthor().getId()))
               .getController();
-      
+
+      guildController
+          .addRolesToMember(
+              guildController.getGuild().getMemberById(event.getAuthor().getId()),
+              guildController
+                  .getGuild()
+                  .getRolesByName(App.properties.get("member.roleName", "Member"), true))
+          .queue();
     }
   }
 }

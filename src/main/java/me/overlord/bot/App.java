@@ -2,16 +2,13 @@ package me.overlord.bot;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.ufoscout.properlty.Properlty;
-
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.security.auth.login.LoginException;
-
 import me.overlord.bot.commandframework.CommandExecutor;
 import me.overlord.bot.commandframework.annotation.Command;
 import me.overlord.bot.commandframework.annotation.CommandSet;
@@ -37,7 +34,7 @@ public class App {
   public static Map<String, Method> commands = new HashMap<>();
 
   public static Cache<String, String> holdingQueueGuildCache =
-          Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
+      Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
 
   public static void main(String[] args) throws LoginException, InterruptedException {
     logger.info("=== Loading Overlord Bot ===");
